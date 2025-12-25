@@ -22,11 +22,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Link from "next/link";
+import store from "../lib/store";
+import { signOut } from "next-auth/react";
 
 export default function AdminHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("users");
   const router = useRouter();
+  const { logout } = store();
 
   const menuList = [
     {
@@ -49,6 +52,10 @@ export default function AdminHeader() {
     setActiveTab(key);
     router.push(path);
     setDrawerOpen(false);
+  };
+  const handlelogout = () => {
+    signOut();
+    logout();
   };
 
   return (
@@ -108,7 +115,11 @@ export default function AdminHeader() {
               </Link>
             </Typography>
 
-            <Button color="inherit" startIcon={<LogoutIcon />}>
+            <Button
+              color="inherit"
+              startIcon={<LogoutIcon />}
+              onClick={handlelogout}
+            >
               Logout
             </Button>
           </Toolbar>
