@@ -1,17 +1,50 @@
 "use client";
+
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const ProductC = ({ productId }) => {
-  const [productData, setProductData] = useState(null);
+/* ================= TYPES ================= */
+interface Review {
+  rating: number;
+  reviewerName: string;
+  comment: string;
+}
+
+interface Product {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  discountPercentage: number;
+  rating: number;
+  stock: number;
+  availabilityStatus?: string; // optional fallback
+  category: string;
+  brand: string;
+  thumbnail: string;
+  images?: string[];
+  reviews?: Review[];
+}
+
+interface ProductCProps {
+  productId: number | string;
+}
+
+/* ================= COMPONENT ================= */
+const ProductC: React.FC<ProductCProps> = ({ productId }) => {
+  const [productData, setProductData] = useState<Product | null>(null);
 
   const fetchProductData = async () => {
     try {
-      const { data } = await axios.get(
+      const { data } = await axios.get<Product>(
         `https://dummyjson.com/products/${productId}`
       );
-      setProductData(data);
+      // For compatibility: add availabilityStatus if not present
+      setProductData({
+        ...data,
+        availabilityStatus: data.stock > 0 ? "In Stock" : "Out of Stock",
+      });
     } catch (error) {
       console.error("Error fetching product data:", error);
       toast.error("Error fetching product data");
@@ -112,7 +145,7 @@ const ProductC = ({ productId }) => {
       {/* Reviews */}
       <h3>Customer Reviews</h3>
 
-      {productData.reviews?.length > 0 ? (
+      {productData.reviews?.length ? (
         productData.reviews.map((review, index) => (
           <div
             key={index}

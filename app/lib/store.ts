@@ -3,7 +3,35 @@ import { toast } from "react-toastify";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-const store = create(
+/* ================= TYPES ================= */
+interface User {
+  id: number;
+  username: string;
+  role?: string;
+  [key: string]: any;
+}
+
+interface Product {
+  id: number;
+  title: string;
+  [key: string]: any;
+}
+
+interface StoreState {
+  isLogin: boolean;
+  username: string;
+  role: string;
+  users: User[];
+  products: Product[];
+  setUser: (username: string, role: string) => void;
+  logout: () => void;
+  getUsers: () => Promise<void>;
+  getProducts: () => Promise<void>;
+}
+
+/* ================= STORE ================= */
+
+const store = create<StoreState>()(
   persist(
     (set) => ({
       isLogin: false,
@@ -12,19 +40,11 @@ const store = create(
       users: [],
       products: [],
 
-      setUser: (username, role) =>
-        set({
-          isLogin: true,
-          username,
-          role,
-        }),
+      setUser: (username: string, role: string) =>
+        set({ isLogin: true, username, role }),
 
-      logout: () =>
-        set({
-          isLogin: false,
-          username: "",
-          role: "",
-        }),
+      logout: () => set({ isLogin: false, username: "", role: "" }),
+
       getUsers: async () => {
         try {
           const { data } = await axios.get("/api/getusers");
@@ -39,6 +59,7 @@ const store = create(
           toast.error("Failed to fetch users");
         }
       },
+
       getProducts: async () => {
         try {
           const { data } = await axios.get("/api/getproducts");

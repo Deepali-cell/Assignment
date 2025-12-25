@@ -17,19 +17,27 @@ import { toast } from "react-toastify";
 import { signIn, useSession } from "next-auth/react";
 import store from "../lib/store";
 
+interface LoginData {
+  username: string;
+  password: string;
+}
+
 export default function AdminLoginC() {
   const [showPassword, setShowPassword] = useState(false);
-  const [data, setData] = useState({ username: "", password: "" });
+  const [data, setData] = useState<LoginData>({ username: "", password: "" });
   const router = useRouter();
   const { setUser } = store();
   const { data: session, status } = useSession();
 
-  const handleChange = (e) => {
+  // ✅ Typed event
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setData({ ...data, [name]: value });
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!data.username || !data.password) {
@@ -52,13 +60,18 @@ export default function AdminLoginC() {
     router.push("/adminDashboard");
   };
 
-  // 🔑 Session aane ke baad Zustand sync
+  // 🔑 Sync Zustand after session
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
-      setUser(session.user?.username, session.user?.role);
+      // ✅ Ensure types exist
+      const username =
+        (session.user as any)?.username || session.user.name || "";
+      const role = (session.user as any)?.role || "user";
+      setUser(username, role);
       router.replace("/adminDashboard");
     }
   }, [status, session, setUser, router]);
+
   return (
     <Box
       sx={{
@@ -96,7 +109,10 @@ export default function AdminLoginC() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>

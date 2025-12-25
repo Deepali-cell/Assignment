@@ -11,28 +11,30 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          return null;
+        }
+
         try {
           const response = await axios.post(
             "https://dummyjson.com/auth/login",
             {
-              username: credentials?.username,
-              password: credentials?.password,
+              username: credentials.username,
+              password: credentials.password,
             }
           );
 
           const data = response.data;
+          if (!data?.id) return null;
 
-          if (!data || !data.id) return null;
-
-          // Return safe user info
           return {
             id: data.id,
             username: data.username,
             email: data.email,
             role: data.username === "emilys" ? "admin" : "user",
-            token: data.accessToken,
+            accessToken: data.accessToken,
           };
-        } catch (err) {
+        } catch (err: any) {
           console.error(
             "DummyJSON login error:",
             err.response?.data || err.message
@@ -42,7 +44,9 @@ const handler = NextAuth({
       },
     }),
   ],
+
   session: { strategy: "jwt" },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -53,16 +57,21 @@ const handler = NextAuth({
       }
       return token;
     },
+
     async session({ session, token }) {
-      session.user = {
-        id: token.id,
-        username: token.username,
-        role: token.role,
-        accessToken: token.accessToken,
-      };
+      if (session.user) {
+        session.user = {
+          ...session.user,
+          id: token.id,
+          username: token.username,
+          role: token.role,
+          accessToken: token.accessToken,
+        };
+      }
       return session;
     },
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 });
 

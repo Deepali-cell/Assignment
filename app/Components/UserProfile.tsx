@@ -52,7 +52,7 @@ const UserProfile = () => {
           </Typography>
 
           <Typography>
-            <strong>Logged in via:</strong> {session.provider || "credentials"}
+            <strong>Logged in via:</strong> {"credentials"}
           </Typography>
         </CardContent>
       </Card>

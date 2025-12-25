@@ -13,22 +13,27 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import axios from "axios";
-import store from "../lib/store";
+
+interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  phone: string;
+  age: number;
+  gender: string;
+  image: string;
+}
 
 let searchTimeout: NodeJS.Timeout;
 
 const UsersList = () => {
-  const { getUsers, users } = store(); // optional, can prefetch
-  const [displayUsers, setDisplayUsers] = useState<any[]>([]);
+  const [displayUsers, setDisplayUsers] = useState<User[]>([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const usersPerPage = 6;
-
-  // Optional: prefetch store users
-  useEffect(() => {
-    getUsers();
-  }, []);
 
   const fetchUsers = async (page = 1, search = "") => {
     const limit = usersPerPage;
@@ -60,7 +65,7 @@ const UsersList = () => {
     }, 500);
   };
 
-  const handlePageChange = (_: any, value: number) => {
+  const handlePageChange = (_: unknown, value: number) => {
     setPage(value);
     fetchUsers(value, search);
   };
