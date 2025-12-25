@@ -1,4 +1,4 @@
-import ProductC from "@/app/Components/ProductC";
+import UserC from "../../../../Components/UserC";
 
 type PageProps = {
   params: {
