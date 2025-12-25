@@ -1,6 +1,13 @@
-import UserC from "@/app/Components/UserC";
+import ProductC from "@/app/Components/ProductC";
 
-export default async function Page({ params }) {
-  const { id } = await params;
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
+
+export default async function Page({ params }: PageProps) {
+  const { id } = params;
+
   return <UserC userId={id} />;
 }

@@ -1,6 +1,13 @@
 import ProductC from "@/app/Components/ProductC";
 
-export default async function Page({ params }) {
-  const { id } = await params;
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
+
+export default async function Page({ params }: PageProps) {
+  const { id } = params;
+
   return <ProductC productId={id} />;
 }
