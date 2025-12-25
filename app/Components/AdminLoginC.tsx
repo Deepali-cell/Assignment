@@ -57,7 +57,7 @@ export default function AdminLoginC() {
     }
 
     toast.success("Login successful");
-    router.push("/adminDashboard");
+    router.push("/admindashboard");
   };
 
   // 🔑 Sync Zustand after session
@@ -68,7 +68,7 @@ export default function AdminLoginC() {
         (session.user as any)?.username || session.user.name || "";
       const role = (session.user as any)?.role || "user";
       setUser(username, role);
-      router.replace("/adminDashboard");
+      router.replace("/admindashboard");
     }
   }, [status, session, setUser, router]);
 
